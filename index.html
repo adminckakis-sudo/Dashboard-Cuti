@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Rekapitulasi Cuti - KAI</title>
+    
+    <!-- Google Fonts: Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Banner Utama bernuansa KAI -->
+    <header class="kai-banner">
+        
+        <!-- Top Header: Logo di Kiri, Waktu di Kanan -->
+        <div class="top-header">          
+            <div class="time-container">
+                <span id="hari-ini">Hari, </span>
+                <span id="tanggal-ini">00 Bulan 0000</span> &nbsp;|&nbsp; 
+                <span id="jam-ini">00:00:00</span>
+            </div>
+        </div>
+
+        <div class="banner-overlay"></div>
+        
+        <div class="banner-container">
+            <h1 class="banner-title">Dashboard Cuti</h1>
+            <h2 class="banner-title">UPT Crew KA Kelas C Kisaran</h2>
+            <p class="banner-subtitle">Sistem Informasi Rekapitulasi Data Cuti Awak Sarana Perkeretaapian UPT Crew KA Kelas C Kisaran</p>
+        </div>
+    </header>
+
+    <!-- Konten Dashboard -->
+    <main>
+        <section class="dashboard-content">
+            
+            <!-- 1. KARTU KPI UTAMA: TOTAL ASP -->
+            <a href="#tabel-crew" class="kpi-utama-card">
+                <!-- Lapisan transparan hover -->
+                <div class="kpi-hover-overlay">
+                    <span>Lihat Selengkapnya ➔</span>
+                </div>
+
+                <!-- Bagian Atas: Total Keseluruhan -->
+                <div class="kpi-utama-header">
+                    <div class="widget-icon">🚂</div>
+                    <div class="widget-info">
+                        <h3>Total ASP UPT Crew KA Kelas C Kisaran</h3>
+                        <p class="widget-value" id="val-asp">0</p>
+                    </div>
+                </div>
+                
+                <!-- Bagian Bawah: Rincian Jabatan -->
+                <div class="kpi-utama-footer">
+                    <div class="kpi-detail">
+                        <span class="detail-label">Masinis Madya</span>
+                        <span class="detail-val" id="val-madya">0</span>
+                    </div>
+                    <div class="kpi-detail">
+                        <span class="detail-label">Masinis Muda</span>
+                        <span class="detail-val" id="val-muda">0</span>
+                    </div>
+                    <div class="kpi-detail">
+                        <span class="detail-label">Masinis Pertama</span>
+                        <span class="detail-val" id="val-pertama">0</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 2. WIDGET HARIAN & TAHUNAN -->
+            <div class="widget-grid">
+                
+                <!-- Card 1: Cuti Hari Ini -->
+                <a href="#tabel-cuti" class="widget-card">
+                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-icon">🏖️</div>
+                    <div class="widget-info">
+                        <h3>Cuti Hari Ini</h3>
+                        <p class="widget-value" id="val-cuti">0</p>
+                        <span class="widget-desc">Pegawai</span>
+                    </div>
+                </a>
+
+                <!-- Card 2: Sakit Hari Ini -->
+                <a href="#tabel-sakit" class="widget-card">
+                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-icon">🤒</div>
+                    <div class="widget-info">
+                        <h3>Sakit Hari Ini</h3>
+                        <p class="widget-value" id="val-sakit">0</p>
+                        <span class="widget-desc">Pegawai</span>
+                    </div>
+                </a>
+
+                <!-- Card 3: Cuti Penting -->
+                <a href="#tabel-itmb" class="widget-card">
+                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-icon">📜</div>
+                    <div class="widget-info">
+                        <h3>Cuti Penting</h3>
+                        <p class="widget-value" id="val-itmb">0</p> 
+                        <span class="widget-desc">Pegawai</span>
+                    </div>
+                </a>
+
+                <!-- Card 4: Total TMS -->
+                <a href="#tabel-tms" class="widget-card">
+                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-icon">❌</div>
+                    <div class="widget-info">
+                        <h3>Total TMS</h3>
+                        <p class="widget-value" id="val-tms">0</p>
+                        <span class="widget-desc">Pegawai</span>
+                    </div>
+                </a>
+
+                <!-- Card 5: Total Mangkir -->
+                <a href="#tabel-mangkir" class="widget-card">
+                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-icon">🚨</div>
+                    <div class="widget-info">
+                        <h3>Mangkir</h3>
+                        <p class="widget-value" id="val-mangkir">0</p>
+                        <span class="widget-desc">Pegawai</span>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL POP-UP DETAIL DATA PEGAWAI           -->
+    <!-- ========================================== -->
+    <div id="modal-detail" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Daftar Detail</h2>
+                <button id="modal-close" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NAMA</th>
+                            <th>NIPP</th>
+                            <th>JABATAN</th>
+                            <th>KETERANGAN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-table-body">
+                        <!-- Data baris akan dimasukkan secara dinamis lewat JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skrip Penghubung Utama -->
+    <script src="js/main.js"></script>
+</body>
+</html>
