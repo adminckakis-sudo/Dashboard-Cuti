@@ -349,3 +349,105 @@ h2.banner-title {
 .modal-table tr:nth-child(even) {
     background-color: #f9f9f9;
 }
+
+/* =========================================
+   RESPONSIVITAS SELURUH PERANGKAT (MOBILE & TABLET)
+   ========================================= */
+
+/* 1. Penyesuaian Umum untuk Layar Kecil (Mobile) */
+@media (max-width: 900px) {
+    /* Mengubah grid widget dari 3 kolom menjadi 2 kolom di tablet */
+    .widgets-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px;
+    }
+
+    .banner-title {
+        font-size: 2.2rem !important;
+    }
+
+    h2.banner-title {
+        font-size: 1.5rem !important;
+    }
+
+    .dashboard-content {
+        padding: 0 10px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Mengubah grid widget menjadi 1 kolom penuh di HP */
+    .widgets-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .kai-banner {
+        height: auto !important;
+        min-height: 80vh;
+        padding: 40px 15px !important;
+    }
+
+    .banner-title {
+        font-size: 1.8rem !important;
+    }
+
+    h2.banner-title {
+        font-size: 1.2rem !important;
+    }
+
+    /* Penyesuaian Top Header agar tidak menumpuk di HP kecil */
+    .top-header {
+        justify-content: center !important;
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+
+    /* Kartu KPI Utama (Total ASP) menyesuaikan layar HP */
+    .kpi-utama-footer {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Kotak Ringkasan Bulanan menjadi 1 atau 2 kolom di HP */
+    .bulan-summary-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .bulan-control-container {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .bulan-control-container select, 
+    .bulan-control-container button,
+    #input-cari-bulan {
+        width: 100% !important;
+    }
+}
+
+/* 2. Agar Tabel Modal & Tabel Bulanan Bisa Digulir Menyamping di HP (Scrollable Table) */
+.modal-body, 
+#hasil-rekap-bulanan {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.modal-table, 
+#hasil-rekap-bulanan table {
+    min-width: 600px; /* Memastikan tabel tidak tertekan paksa di layar sempit */
+}
+
+/* 3. Penyesuaian Modal Pop-up di Perangkat Mobile */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95% !important;
+        max-height: 85vh !important;
+        margin: 10px;
+    }
+
+    .modal-header h2 {
+        font-size: 1rem !important;
+    }
+}
