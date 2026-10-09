@@ -3,58 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Rekapitulasi Cuti - KAI</title>
-    
-    <!-- Google Fonts: Montserrat -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;600;800&display=swap" rel="stylesheet">
-
+    <title>Dashboard Rekapitulasi - UPT Crew KA Kisaran</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Banner Utama bernuansa KAI -->
-    <header class="kai-banner">
-        
-        <!-- Top Header: Logo di Kiri, Waktu di Kanan -->
-        <div class="top-header">          
-            <div class="time-container">
-                <span id="hari-ini">Hari, </span>
-                <span id="tanggal-ini">00 Bulan 0000</span> &nbsp;|&nbsp; 
-                <span id="jam-ini">00:00:00</span>
-            </div>
-        </div>
 
-        <div class="banner-overlay"></div>
-        
-        <div class="banner-container">
-            <h1 class="banner-title">Dashboard Cuti</h1>
-            <h2 class="banner-title">UPT Crew KA Kelas C Kisaran</h2>
-            <p class="banner-subtitle">Sistem Informasi Rekapitulasi Data Cuti Awak Sarana Perkeretaapian UPT Crew KA Kelas C Kisaran</p>
+    <!-- ================= TOP HEADER (WAKTU REAL-TIME) ================= -->
+    <header class="top-header">
+        <div class="time-container">
+            <span id="hari-ini"></span>
+            <span id="tanggal-ini">| </span>
+            <span id="jam-ini"></span>
         </div>
     </header>
 
-    <!-- Konten Dashboard -->
-    <main>
-        <section class="dashboard-content">
-            
-            <!-- 1. KARTU KPI UTAMA: TOTAL ASP -->
-            <a href="#tabel-crew" class="kpi-utama-card">
-                <!-- Lapisan transparan hover -->
-                <div class="kpi-hover-overlay">
-                    <span>Lihat Selengkapnya ➔</span>
-                </div>
+    <!-- ================= SECTION 1: BANNER / HERO SECTION ================= -->
+    <section class="kai-banner">
+        <div class="banner-overlay"></div>
+        <div class="banner-container">
+            <h1 class="banner-title">DASHBOARD REKAPITULASI</h1>
+            <h2 class="banner-title">UPT CREW KA KELAS C KISARAN</h2>
+            <p class="banner-subtitle">Sistem Monitoring Kehadiran dan Statistik Personel Berbasis Real-Time</p>
+        </div>
+    </section>
 
-                <!-- Bagian Atas: Total Keseluruhan -->
+    <!-- ================= KONTEN UTAMA DASHBOARD ================= -->
+    <main class="dashboard-content">
+
+        <!-- ================= SECTION 2: JUMLAH ANGGOTA (TOTAL ASP) ================= -->
+        <section class="dashboard-section" id="section-asp">
+            <div class="section-title-box">
+                <h2>Statistik Personel</h2>
+            </div>
+            <a href="#tabel-crew" class="kpi-utama-card">
+                <div class="kpi-hover-overlay">Lihat Detail Keseluruhan Anggota</div>
                 <div class="kpi-utama-header">
-                    <div class="widget-icon">🚂</div>
+                    <div class="widget-icon">🚆</div>
                     <div class="widget-info">
                         <h3>Total ASP UPT Crew KA Kelas C Kisaran</h3>
-                        <p class="widget-value" id="val-asp">0</p>
+                        <p><span id="val-asp">0</span> Pegawai</p>
                     </div>
                 </div>
-                
-                <!-- Bagian Bawah: Rincian Jabatan -->
                 <div class="kpi-utama-footer">
                     <div class="kpi-detail">
                         <span class="detail-label">Masinis Madya</span>
@@ -70,72 +61,176 @@
                     </div>
                 </div>
             </a>
+        </section>
 
-            <!-- 2. WIDGET HARIAN & TAHUNAN -->
-            <div class="widget-grid">
+        <!-- ================= SECTION 3: LAPORAN HARIAN ================= -->
+        <section class="dashboard-section" id="section-laporan-harian">
+            <div class="section-title-box" style="margin-top: 30px;">
+                <h2 style="color: var(--kai-blue); font-size: 1.4rem; font-weight: 700;">Laporan Kehadiran Harian</h2>
+            </div>
+
+            <!-- Grid 6 Widget (2 Baris x 3 Kolom) -->
+            <div class="widgets-grid">
                 
-                <!-- Card 1: Cuti Hari Ini -->
+                <!-- Widget: ASP Hadir -->
+                <a class="widget-card">
+                    <div class="widget-hover-overlay">Lihat Detail Hadir</div>
+                    <div class="widget-icon">🟢</div>
+                    <div class="widget-info">
+                        <h3>ASP Hadir Hari Ini</h3>
+                        <p><span id="val-hadir">0</span> Pegawai</p>
+                    </div>
+                </a>
+
+                <!-- Widget: Cuti Hari Ini -->
                 <a href="#tabel-cuti" class="widget-card">
-                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-hover-overlay">Lihat Detail Cuti</div>
                     <div class="widget-icon">🏖️</div>
                     <div class="widget-info">
                         <h3>Cuti Hari Ini</h3>
-                        <p class="widget-value" id="val-cuti">0</p>
-                        <span class="widget-desc">Pegawai</span>
+                        <p><span id="val-cuti">0</span> Pegawai</p>
                     </div>
                 </a>
 
-                <!-- Card 2: Sakit Hari Ini -->
+                <!-- Widget: Sakit Hari Ini -->
                 <a href="#tabel-sakit" class="widget-card">
-                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-hover-overlay">Lihat Detail Sakit</div>
                     <div class="widget-icon">🤒</div>
                     <div class="widget-info">
                         <h3>Sakit Hari Ini</h3>
-                        <p class="widget-value" id="val-sakit">0</p>
-                        <span class="widget-desc">Pegawai</span>
+                        <p><span id="val-sakit">0</span> Pegawai</p>
                     </div>
                 </a>
 
-                <!-- Card 3: Cuti Penting -->
+                <!-- Widget: Cuti Penting -->
                 <a href="#tabel-itmb" class="widget-card">
-                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-hover-overlay">Lihat Detail Cuti Penting</div>
                     <div class="widget-icon">📜</div>
                     <div class="widget-info">
                         <h3>Cuti Penting</h3>
-                        <p class="widget-value" id="val-itmb">0</p> 
-                        <span class="widget-desc">Pegawai</span>
+                        <p><span id="val-itmb">0</span> Pegawai</p>
                     </div>
                 </a>
 
-                <!-- Card 4: Total TMS -->
+                <!-- Widget: Total TMS -->
                 <a href="#tabel-tms" class="widget-card">
-                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-hover-overlay">Lihat Detail TMS</div>
                     <div class="widget-icon">❌</div>
                     <div class="widget-info">
                         <h3>Total TMS</h3>
-                        <p class="widget-value" id="val-tms">0</p>
-                        <span class="widget-desc">Pegawai</span>
+                        <p><span id="val-tms">0</span> Pegawai</p>
                     </div>
                 </a>
 
-                <!-- Card 5: Total Mangkir -->
+                <!-- Widget: Mangkir -->
                 <a href="#tabel-mangkir" class="widget-card">
-                    <div class="widget-hover-overlay"><span>Lihat Detail ➔</span></div>
+                    <div class="widget-hover-overlay">Lihat Detail Mangkir</div>
                     <div class="widget-icon">🚨</div>
                     <div class="widget-info">
                         <h3>Mangkir</h3>
-                        <p class="widget-value" id="val-mangkir">0</p>
-                        <span class="widget-desc">Pegawai</span>
+                        <p><span id="val-mangkir">0</span> Pegawai</p>
                     </div>
                 </a>
 
             </div>
         </section>
+
+        <!-- ================= SECTION 4: LAPORAN PER BULAN ================= -->
+        <section class="dashboard-section" id="section-laporan-bulanan" style="margin-top: 50px; background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-top: 6px solid var(--kai-orange);">
+            <div class="section-title-box" style="margin-bottom: 20px;">
+                <h2 style="color: var(--kai-blue); font-size: 1.4rem; font-weight: 700;">Rekapitulasi Laporan Per Bulan</h2>
+                <p style="color: #666; font-size: 0.95rem; margin-top: 5px;">Pilih bulan untuk melihat ringkasan statistik dan rekapitulasi kehadiran bulanan secara spesifik.</p>
+            </div>
+
+            <!-- Kontrol Pilih Bulan & Tombol Aksi -->
+            <div class="bulan-control-container" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                <select id="select-pilih-bulan" style="padding: 10px 15px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Montserrat', sans-serif; font-size: 1rem; outline: none; background: #f9f9f9; cursor: pointer;">
+                    <option value="0">Januari</option>
+                    <option value="1">Februari</option>
+                    <option value="2">Maret</option>
+                    <option value="3">April</option>
+                    <option value="4">Mei</option>
+                    <option value="5">Juni</option>
+                    <option value="6">Juli</option>
+                    <option value="7">Agustus</option>
+                    <option value="8">September</option>
+                    <option value="9">Oktober</option>
+                    <option value="10">November</option>
+                    <option value="11">Desember</option>
+                </select>
+                <button id="btn-tampilkan-bulan" style="padding: 10px 20px; background-color: var(--kai-blue); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
+                    Tampilkan Rekap Bulanan
+                </button>
+            </div>
+
+            <!-- Area Hasil Rekapitulasi Bulanan (Awalnya Tersembunyi) -->
+            <div id="hasil-rekap-bulanan" style="display: none; margin-top: 20px;">
+                
+<!-- 1. Ringkasan Statistik Bulanan (Card Summary Terpisah) -->
+                <div class="bulan-summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                    <div style="background: #f4f6f9; padding: 15px; border-radius: 8px; border-left: 4px solid var(--kai-blue);">
+                        <span style="font-size: 0.85rem; color: #666; font-weight: 600;">Total Personel</span>
+                        <h3 id="sum-total-pegawai" style="font-size: 1.3rem; color: var(--kai-blue); margin-top: 5px;">0</h3>
+                    </div>
+                    <div style="background: #f4f6f9; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+                        <span style="font-size: 0.85rem; color: #666; font-weight: 600;">Rata-rata Hadir</span>
+                        <h3 id="sum-rata-hadir" style="font-size: 1.3rem; color: #28a745; margin-top: 5px;">0%</h3>
+                    </div>
+                    <div style="background: #f4f6f9; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                        <span style="font-size: 0.85rem; color: #666; font-weight: 600;">Total Cuti (CT)</span>
+                        <h3 id="sum-total-cuti" style="font-size: 1.3rem; color: #17a2b8; margin-top: 5px;">0</h3>
+                    </div>
+                    <div style="background: #f4f6f9; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                        <span style="font-size: 0.85rem; color: #666; font-weight: 600;">Total Sakit (CSK)</span>
+                        <h3 id="sum-total-sakit" style="font-size: 1.3rem; color: #d39e00; margin-top: 5px;">0</h3>
+                    </div>
+                    <div style="background: #f4f6f9; padding: 15px; border-radius: 8px; border-left: 4px solid #e67e22;">
+                        <span style="font-size: 0.85rem; color: #666; font-weight: 600;">Total TMS</span>
+                        <h3 id="sum-total-tms" style="font-size: 1.3rem; color: #e67e22; margin-top: 5px;">0</h3>
+                    </div>
+                    <div style="background: #f4f6f9; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545;">
+                        <span style="font-size: 0.85rem; color: #666; font-weight: 600;">Total Mangkir</span>
+                        <h3 id="sum-total-mangkir" style="font-size: 1.3rem; color: #dc3545; margin-top: 5px;">0</h3>
+                    </div>
+                </div>
+
+                <!-- 2. Kontrol Tabel: Pencarian & Tombol Ekspor -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <input type="text" id="input-cari-bulan" placeholder="Cari nama atau NIPP pegawai..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; width: 280px; font-size: 0.9rem; outline: none;">
+                    <button id="btn-ekspor-excel" style="padding: 8px 15px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
+                        📥 Unduh Rekap (CSV)
+                    </button>
+                </div>
+
+                <!-- 3. Tabel Rincian Rekapitulasi Per Personel -->
+                <div style="overflow-x: auto;">
+                    <table class="modal-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="background-color: var(--kai-blue); color: white;">
+                            <th style="padding: 10px; border: 1px solid #ddd;">No</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Nama Pegawai</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">NIPP</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Jabatan</th>
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Hadir</th>
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Cuti (CT)</th>
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Sakit (CSK)</th>
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Cuti Penting</th>
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">TMS</th>
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Mangkir</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tabel-rekap-bulanan-body">
+                            <!-- Data rekap per bulan akan dimasukkan di sini via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
     </main>
 
-    <!-- ========================================== -->
-    <!-- MODAL POP-UP DETAIL DATA PEGAWAI           -->
-    <!-- ========================================== -->
+    <!-- ================= MODAL POP-UP DETAIL ================= -->
     <div id="modal-detail" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
@@ -154,14 +249,14 @@
                         </tr>
                     </thead>
                     <tbody id="modal-table-body">
-                        <!-- Data baris akan dimasukkan secara dinamis lewat JavaScript -->
+                        <!-- Data dimasukkan secara dinamis via JavaScript -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Skrip Penghubung Utama -->
+    <!-- Hubungkan dengan file JavaScript -->
     <script src="js/main.js"></script>
 </body>
 </html>
