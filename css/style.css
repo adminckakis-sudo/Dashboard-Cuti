@@ -1,3 +1,7 @@
+html {
+    -webkit-text-size-adjust: 100%; /* Mencegah Chrome Mobile mengubah ukuran teks secara sepihak */
+    text-size-adjust: 100%;
+}
 /* =========================================
    VARIABEL WARNA 
    ========================================= */
