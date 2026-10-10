@@ -1219,3 +1219,213 @@ body {
     font-size: 0.74rem;
     color: var(--text-muted);
 }
+
+/* ==========================================================================
+   STATISTIK TREN CUTI TAHUNAN
+   ========================================================================== */
+.tren-cuti-card {
+    background-color: var(--surface-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-card);
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.tren-stats-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.stat-box {
+    background-color: var(--surface-subtle);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-box-label {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-box-val-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.stat-box-val {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--kai-blue);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.stat-box-val.highlight-peak {
+    color: var(--status-cuti);
+    font-size: 1.3rem;
+}
+
+.stat-box-unit {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.tren-grid-bulan {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 12px;
+}
+
+.tren-bulan-item {
+    background-color: var(--surface-subtle);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px 8px 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.tren-bulan-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--status-cuti);
+    background-color: var(--status-cuti-bg);
+}
+
+.tren-nama-bulan {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    z-index: 2;
+}
+
+.tren-nilai-bulan {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--kai-blue);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 8px;
+    z-index: 2;
+}
+
+/* Mini Bar Indikator Statistik di Background Kartu Bulan */
+.tren-bar-visual {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(2, 132, 199, 0.15); /* Mengikuti warna status cuti */
+    transition: height 0.4s ease;
+    z-index: 1;
+    border-top: 2px solid var(--status-cuti);
+}
+
+.tren-bulan-loading {
+    grid-column: span 12;
+    text-align: center;
+    padding: 24px;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+}
+
+/* Responsif untuk Tablet & Mobile */
+@media (max-width: 1024px) {
+    .tren-stats-summary-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .tren-grid-bulan {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .tren-grid-bulan {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ==========================================================================
+   SVG LINE CHART STYLING
+   ========================================================================== */
+.line-chart-container {
+    width: 100%;
+    height: 290px;
+    position: relative;
+    margin-top: 10px;
+}
+
+#tren-line-chart {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.chart-grid-line {
+    stroke: var(--border-subtle);
+    stroke-dasharray: 4 4;
+    stroke-width: 1;
+}
+
+.chart-area {
+    fill: rgba(2, 132, 199, 0.08);
+}
+
+.chart-line {
+    fill: none;
+    stroke: var(--status-cuti);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.chart-dot {
+    fill: var(--surface-card);
+    stroke: var(--status-cuti);
+    stroke-width: 2.5;
+    transition: r 0.2s ease, fill 0.2s ease;
+}
+
+.chart-dot:hover {
+    r: 6;
+    fill: var(--status-cuti);
+    cursor: pointer;
+}
+
+.chart-text-month {
+    font-size: 11px;
+    fill: var(--text-muted);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-anchor: middle;
+}
+
+.chart-text-value {
+    font-size: 11px;
+    fill: var(--kai-blue);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    text-anchor: middle;
+}
