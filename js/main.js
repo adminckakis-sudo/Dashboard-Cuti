@@ -323,6 +323,35 @@ if (btnTampilkanBulan) {
     });
 }
 
+// Fungsi Perender Tabel Rekapitulasi Bulanan
+function renderTabelRekapBulanan(dataList) {
+    const tbodyRekap = document.getElementById('tabel-rekap-bulanan-body');
+    if (!tbodyRekap) return;
+    tbodyRekap.innerHTML = '';
+
+    if (dataList.length === 0) {
+        tbodyRekap.innerHTML = `<tr><td colspan="10" class="cell-center" style="padding: 24px; color: var(--text-muted);">Tidak ada personel yang cocok dengan pencarian.</td></tr>`;
+        return;
+    }
+
+    dataList.forEach((pegawai, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="cell-center">${index + 1}</td>
+            <td style="font-weight: 600; color: var(--text-primary);">${pegawai.nama}</td>
+            <td class="cell-center" style="font-variant-numeric: tabular-nums;">${pegawai.nipp}</td>
+            <td>${pegawai.jabatan}</td>
+            <td class="cell-center val-nonzero-hadir">${pegawai.hadir}</td>
+            <td class="cell-center">${pegawai.cuti}</td>
+            <td class="cell-center">${pegawai.sakit}</td>
+            <td class="cell-center">${pegawai.penting}</td>
+            <td class="cell-center ${pegawai.tms > 0 ? 'val-nonzero-tms' : ''}">${pegawai.tms}</td>
+            <td class="cell-center ${pegawai.mangkir > 0 ? 'val-nonzero-mangkir' : ''}">${pegawai.mangkir}</td>
+        `;
+        tbodyRekap.appendChild(row);
+    });
+}
+
 // 4. INTERAKSI MODAL POP-UP DETAIL
 let currentModalData = [];
 
@@ -869,6 +898,21 @@ function renderTabelSisaCuti(dataList) {
     }
 
     dataList.forEach((p, idx) => {
+        // Logika Warna Berdasarkan Sisa Cuti:
+        // Sisa >= 6: Hijau
+        // Sisa 1 - 5: Kuning
+        // Sisa 0: Merah
+        let warnaSisa = 'var(--status-hadir)'; // Default Hijau
+        let bgSisa = 'var(--status-hadir-bg)';
+
+        if (p.sisaCuti === 0) {
+            warnaSisa = 'var(--status-mangkir)'; // Merah
+            bgSisa = 'var(--status-mangkir-bg)';
+        } else if (p.sisaCuti >= 1 && p.sisaCuti <= 5) {
+            warnaSisa = 'var(--status-sakit)'; // Kuning / Amber
+            bgSisa = 'var(--status-sakit-bg)';
+        }
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="cell-center">${idx + 1}</td>
@@ -876,7 +920,11 @@ function renderTabelSisaCuti(dataList) {
             <td class="cell-center" style="font-variant-numeric: tabular-nums;">${p.nipp}</td>
             <td class="cell-center" style="font-weight: 700;">${p.hakCuti} Hari</td>
             <td class="cell-center" style="color: var(--status-cuti); font-weight: 700;">${p.cutiTerpakai} Hari</td>
-            <td class="cell-center" style="font-weight: 800; color: ${p.sisaCuti > 0 ? 'var(--kai-orange)' : 'var(--status-mangkir)'};">${p.sisaCuti} Hari</td>
+            <td class="cell-center">
+                <span style="display: inline-block; padding: 3px 10px; border-radius: var(--radius-sm); font-weight: 800; color: ${warnaSisa}; background-color: ${bgSisa};">
+                    ${p.sisaCuti} Hari
+                </span>
+            </td>
             <td style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px; white-space: normal;">${p.riwayatStr}</td>
         `;
         tbody.appendChild(tr);
