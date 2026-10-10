@@ -154,20 +154,38 @@ async function muatDataDashboard() {
             }
         });
 
-        // Injeksi Nilai ke Elemen Dashboard
-        document.getElementById('val-asp').textContent = totalAsp;
-        document.getElementById('val-madya').textContent = madya;
-        document.getElementById('val-muda').textContent = muda;
-        document.getElementById('val-pertama').textContent = pertama;
+        // Injeksi Nilai ke Elemen Dashboard (dengan pengaman pengecekan elemen)
+        const elValAsp = document.getElementById('val-asp');
+        if (elValAsp) elValAsp.textContent = totalAsp;
 
-        document.getElementById('val-cuti').textContent = listCutiHariIni.length;
-        document.getElementById('val-sakit').textContent = listSakitHariIni.length;
-        document.getElementById('val-itmb').textContent = listItmbHariIni.length;
-        document.getElementById('val-tms').textContent = listTmsHarian.length;
-        document.getElementById('val-mangkir').textContent = listMangkirHarian.length;
-        document.getElementById('val-hadir').textContent = listHadir.length;
+        const elValMadya = document.getElementById('val-madya');
+        if (elValMadya) elValMadya.textContent = madya;
 
-        // Hubungkan Trigger Pop-up Modal untuk Seluruh Kartu
+        const elValMuda = document.getElementById('val-muda');
+        if (elValMuda) elValMuda.textContent = muda;
+
+        const elValPertama = document.getElementById('val-pertama');
+        if (elValPertama) elValPertama.textContent = pertama;
+
+        const elValCuti = document.getElementById('val-cuti');
+        if (elValCuti) elValCuti.textContent = listCutiHariIni.length;
+
+        const elValSakit = document.getElementById('val-sakit');
+        if (elValSakit) elValSakit.textContent = listSakitHariIni.length;
+
+        const elValItmb = document.getElementById('val-itmb');
+        if (elValItmb) elValItmb.textContent = listItmbHariIni.length;
+
+        const elValTms = document.getElementById('val-tms');
+        if (elValTms) elValTms.textContent = listTmsHarian.length;
+
+        const elValMangkir = document.getElementById('val-mangkir');
+        if (elValMangkir) elValMangkir.textContent = listMangkirHarian.length;
+
+        const elValHadir = document.getElementById('val-hadir');
+        if (elValHadir) elValHadir.textContent = listHadir.length;
+
+        // Hubungkan Trigger Pop-up Modal untuk Seluruh Kartu (hanya jika elemennya ada)
         setupModalTrigger('tabel-crew', 'Seluruh Personel ASP UPT Kisaran', cacheDataPegawai);
         setupModalTrigger('tabel-hadir', 'Daftar Pegawai Hadir Hari Ini', listHadir);
         setupModalTrigger('tabel-cuti', 'Daftar Pegawai Cuti Tahunan (CT) Hari Ini', listCutiHariIni);
@@ -183,197 +201,127 @@ async function muatDataDashboard() {
     }
 }
 
-
 // 3. REKAPITULASI LAPORAN PER BULAN
 let cacheRekapBulanan = [];
 
-document.getElementById('btn-tampilkan-bulan').addEventListener('click', async function() {
-    const bulanDipilih = document.getElementById('select-pilih-bulan').value;
-    const targetGid = GID_BULAN[bulanDipilih];
-    const namaBulanStr = document.getElementById('select-pilih-bulan').selectedOptions[0].text;
+const btnTampilkanBulan = document.getElementById('btn-tampilkan-bulan');
+if (btnTampilkanBulan) {
+    btnTampilkanBulan.addEventListener('click', async function() {
+        const bulanDipilih = document.getElementById('select-pilih-bulan').value;
+        const targetGid = GID_BULAN[bulanDipilih];
+        const namaBulanStr = document.getElementById('select-pilih-bulan').selectedOptions[0].text;
 
-    const containerHasil = document.getElementById('hasil-rekap-bulanan');
-    const tbodyRekap = document.getElementById('tabel-rekap-bulanan-body');
-    const labelCount = document.getElementById('label-jumlah-rekap');
+        const containerHasil = document.getElementById('hasil-rekap-bulanan');
+        const tbodyRekap = document.getElementById('tabel-rekap-bulanan-body');
+        const labelCount = document.getElementById('label-jumlah-rekap');
 
-    containerHasil.style.display = 'block';
-    tbodyRekap.innerHTML = `<tr><td colspan="10" class="cell-center" style="padding: 24px; color: var(--text-muted);">Menghubungkan dan memuat rekapitulasi ${namaBulanStr}...</td></tr>`;
-
-    try {
-        const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${targetGid}`;
-        const response = await fetch(SHEET_CSV_URL);
-        const dataText = await response.text();
-        const barisData = dataText.split('\n');
-
-        cacheRekapBulanan = [];
-        let processedNipps = new Set();
-
-        let sumCuti = 0;
-        let sumSakit = 0;
-        let sumTms = 0;
-        let sumMangkir = 0;
-        let totalHariMasukSemua = 0;
-
-        barisData.forEach(baris => {
-            const kolom = baris.split(',').map(k => k.trim());
-            if (kolom.length >= 4) {
-                const nama = kolom[1] || '';
-                const potensiNipp = kolom[2];
-                const jabatan = kolom[3] ? kolom[3].toUpperCase() : '';
-
-                if (potensiNipp && !isNaN(potensiNipp) && potensiNipp.length >= 4 && !processedNipps.has(potensiNipp)) {
-                    processedNipps.add(potensiNipp);
-
-                    let cutiPegawai = 0;
-                    let sakitPegawai = 0;
-                    let pentingPegawai = 0;
-                    let tmsPegawai = 0;
-                    let mangkirPegawai = 0;
-                    let hadirPegawai = 0;
-
-                    // Akumulasi tanggal 1 hingga 31
-                    for (let i = 4; i <= 34; i++) {
-                        if (kolom[i]) {
-                            const val = kolom[i].toUpperCase();
-                            if (val === 'CT') cutiPegawai++;
-                            else if (val === 'CSK') sakitPegawai++;
-                            else if (val === 'ITMB' || val === 'SPKA' || val === 'CP') pentingPegawai++;
-                            else if (val === 'TMS') tmsPegawai++;
-                            else if (val === 'M') mangkirPegawai++;
-                            else if (val === 'H' || val === 'V' || val === 'OK') hadirPegawai++;
-                        }
-                    }
-
-                    if (hadirPegawai === 0) {
-                        hadirPegawai = Math.max(0, 30 - (cutiPegawai + sakitPegawai + pentingPegawai + tmsPegawai + mangkirPegawai));
-                    }
-
-                    sumCuti += cutiPegawai;
-                    sumSakit += sakitPegawai;
-                    sumTms += tmsPegawai;
-                    sumMangkir += mangkirPegawai;
-                    totalHariMasukSemua += hadirPegawai;
-
-                    cacheRekapBulanan.push({
-                        nama,
-                        nipp: potensiNipp,
-                        jabatan,
-                        hadir: hadirPegawai,
-                        cuti: cutiPegawai,
-                        sakit: sakitPegawai,
-                        penting: pentingPegawai,
-                        tms: tmsPegawai,
-                        mangkir: mangkirPegawai
-                    });
-                }
-            }
-        });
-
-        // Update Kartu Ringkasan Bulanan
-        const totalPegawai = cacheRekapBulanan.length;
-        document.getElementById('sum-total-pegawai').textContent = totalPegawai;
-        document.getElementById('sum-total-cuti').textContent = sumCuti;
-        document.getElementById('sum-total-sakit').textContent = sumSakit;
-
-        const elSumTms = document.getElementById('sum-total-tms');
-        if (elSumTms) elSumTms.textContent = sumTms;
-
-        const elSumMangkir = document.getElementById('sum-total-mangkir');
-        if (elSumMangkir) elSumMangkir.textContent = sumMangkir;
-
-        const rataRataHadir = totalPegawai > 0 ? ((totalHariMasukSemua / (totalPegawai * 25)) * 100).toFixed(1) : 0;
-        document.getElementById('sum-rata-hadir').textContent = `${rataRataHadir > 100 ? 100 : rataRataHadir}%`;
-
-        if (labelCount) {
-            labelCount.textContent = `Menampilkan ${totalPegawai} personel periode ${namaBulanStr}`;
+        if (containerHasil) containerHasil.style.display = 'block';
+        if (tbodyRekap) {
+            tbodyRekap.innerHTML = `<tr><td colspan="10" class="cell-center" style="padding: 24px; color: var(--text-muted);">Menghubungkan dan memuat rekapitulasi ${namaBulanStr}...</td></tr>`;
         }
 
-        renderTabelRekapBulanan(cacheRekapBulanan);
+        try {
+            const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${targetGid}`;
+            const response = await fetch(SHEET_CSV_URL);
+            const dataText = await response.text();
+            const barisData = dataText.split('\n');
 
-    } catch (error) {
-        console.error("Gagal memuat rekap bulanan:", error);
-        tbodyRekap.innerHTML = `<tr><td colspan="10" class="cell-center" style="padding: 24px; color: var(--status-mangkir);">Gagal memuat berkas rekapitulasi bulan ${namaBulanStr}. Silakan periksa jaringan Anda.</td></tr>`;
-    }
-});
+            cacheRekapBulanan = [];
+            let processedNipps = new Set();
 
-function renderTabelRekapBulanan(dataList) {
-    const tbodyRekap = document.getElementById('tabel-rekap-bulanan-body');
-    tbodyRekap.innerHTML = '';
+            let sumCuti = 0;
+            let sumSakit = 0;
+            let sumTms = 0;
+            let sumMangkir = 0;
+            let totalHariMasukSemua = 0;
 
-    if (dataList.length === 0) {
-        tbodyRekap.innerHTML = `<tr><td colspan="10" class="cell-center" style="padding: 24px; color: var(--text-muted);">Tidak ada personel yang cocok dengan pencarian.</td></tr>`;
-        return;
-    }
+            barisData.forEach(baris => {
+                const kolom = baris.split(',').map(k => k.trim());
+                if (kolom.length >= 4) {
+                    const nama = kolom[1] || '';
+                    const potensiNipp = kolom[2];
+                    const jabatan = kolom[3] ? kolom[3].toUpperCase() : '';
 
-    dataList.forEach((pegawai, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="cell-center">${index + 1}</td>
-            <td style="font-weight: 600; color: var(--text-primary);">${pegawai.nama}</td>
-            <td class="cell-center" style="font-variant-numeric: tabular-nums;">${pegawai.nipp}</td>
-            <td>${pegawai.jabatan}</td>
-            <td class="cell-center val-nonzero-hadir">${pegawai.hadir}</td>
-            <td class="cell-center">${pegawai.cuti}</td>
-            <td class="cell-center">${pegawai.sakit}</td>
-            <td class="cell-center">${pegawai.penting}</td>
-            <td class="cell-center ${pegawai.tms > 0 ? 'val-nonzero-tms' : ''}">${pegawai.tms}</td>
-            <td class="cell-center ${pegawai.mangkir > 0 ? 'val-nonzero-mangkir' : ''}">${pegawai.mangkir}</td>
-        `;
-        tbodyRekap.appendChild(row);
+                    if (potensiNipp && !isNaN(potensiNipp) && potensiNipp.length >= 4 && !processedNipps.has(potensiNipp)) {
+                        processedNipps.add(potensiNipp);
+
+                        let cutiPegawai = 0;
+                        let sakitPegawai = 0;
+                        let pentingPegawai = 0;
+                        let tmsPegawai = 0;
+                        let mangkirPegawai = 0;
+                        let hadirPegawai = 0;
+
+                        for (let i = 4; i <= 34; i++) {
+                            if (kolom[i]) {
+                                const val = kolom[i].toUpperCase();
+                                if (val === 'CT') cutiPegawai++;
+                                else if (val === 'CSK') sakitPegawai++;
+                                else if (val === 'ITMB' || val === 'SPKA' || val === 'CP') pentingPegawai++;
+                                else if (val === 'TMS') tmsPegawai++;
+                                else if (val === 'M') mangkirPegawai++;
+                                else if (val === 'H' || val === 'V' || val === 'OK') hadirPegawai++;
+                            }
+                        }
+
+                        if (hadirPegawai === 0) {
+                            hadirPegawai = Math.max(0, 30 - (cutiPegawai + sakitPegawai + pentingPegawai + tmsPegawai + mangkirPegawai));
+                        }
+
+                        sumCuti += cutiPegawai;
+                        sumSakit += sakitPegawai;
+                        sumTms += tmsPegawai;
+                        sumMangkir += mangkirPegawai;
+                        totalHariMasukSemua += hadirPegawai;
+
+                        cacheRekapBulanan.push({
+                            nama,
+                            nipp: potensiNipp,
+                            jabatan,
+                            hadir: hadirPegawai,
+                            cuti: cutiPegawai,
+                            sakit: sakitPegawai,
+                            penting: pentingPegawai,
+                            tms: tmsPegawai,
+                            mangkir: mangkirPegawai
+                        });
+                    }
+                }
+            });
+
+            const totalPegawai = cacheRekapBulanan.length;
+            const elTotalPegawai = document.getElementById('sum-total-pegawai');
+            const elTotalCuti = document.getElementById('sum-total-cuti');
+            const elTotalSakit = document.getElementById('sum-total-sakit');
+            
+            if (elTotalPegawai) elTotalPegawai.textContent = totalPegawai;
+            if (elTotalCuti) elTotalCuti.textContent = sumCuti;
+            if (elTotalSakit) elTotalSakit.textContent = sumSakit;
+
+            const elSumTms = document.getElementById('sum-total-tms');
+            if (elSumTms) elSumTms.textContent = sumTms;
+
+            const elSumMangkir = document.getElementById('sum-total-mangkir');
+            if (elSumMangkir) elSumMangkir.textContent = sumMangkir;
+
+            const rataRataHadir = totalPegawai > 0 ? ((totalHariMasukSemua / (totalPegawai * 25)) * 100).toFixed(1) : 0;
+            const elRataHadir = document.getElementById('sum-rata-hadir');
+            if (elRataHadir) elRataHadir.textContent = `${rataRataHadir > 100 ? 100 : rataRataHadir}%`;
+
+            if (labelCount) {
+                labelCount.textContent = `Menampilkan ${totalPegawai} personel periode ${namaBulanStr}`;
+            }
+
+            renderTabelRekapBulanan(cacheRekapBulanan);
+
+        } catch (error) {
+            console.error("Gagal memuat rekap bulanan:", error);
+            if (tbodyRekap) {
+                tbodyRekap.innerHTML = `<tr><td colspan="10" class="cell-center" style="padding: 24px; color: var(--status-mangkir);">Gagal memuat berkas rekapitulasi bulan ${namaBulanStr}. Silakan periksa jaringan Anda.</td></tr>`;
+            }
+        }
     });
 }
-
-// Saring Pencarian pada Tabel Bulanan
-document.getElementById('input-cari-bulan').addEventListener('input', function(e) {
-    const keyword = e.target.value.toLowerCase().trim();
-    const filtered = cacheRekapBulanan.filter(p =>
-        p.nama.toLowerCase().includes(keyword) || p.nipp.toLowerCase().includes(keyword)
-    );
-    renderTabelRekapBulanan(filtered);
-
-    const labelCount = document.getElementById('label-jumlah-rekap');
-    if (labelCount) {
-        labelCount.textContent = `Menampilkan ${filtered.length} dari ${cacheRekapBulanan.length} personel`;
-    }
-});
-
-// Ekspor ke CSV / Spreadsheet
-document.getElementById('btn-ekspor-excel').addEventListener('click', function() {
-    if (cacheRekapBulanan.length === 0) {
-        alert("Belum ada data rekapitulasi yang dimuat untuk diunduh. Silakan klik 'Tampilkan Data' terlebih dahulu.");
-        return;
-    }
-
-    const selectBulan = document.getElementById('select-pilih-bulan');
-    const namaBulanStr = selectBulan.selectedOptions[0].text;
-
-    let csvContent = "data:text/csv;charset=utf-8,No,Nama Pegawai,NIPP,Jabatan,Hadir,Cuti (CT),Sakit (CSK),Cuti Penting,TMS,Mangkir\r\n";
-
-    cacheRekapBulanan.forEach((p, index) => {
-        let row = [
-            index + 1,
-            `"${p.nama}"`,
-            `"${p.nipp}"`,
-            `"${p.jabatan}"`,
-            p.hadir,
-            p.cuti,
-            p.sakit,
-            p.penting,
-            p.tms,
-            p.mangkir
-        ];
-        csvContent += row.join(",") + "\r\n";
-    });
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Rekapitulasi_Presensi_UPT_Kisaran_${namaBulanStr}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-});
-
 
 // 4. INTERAKSI MODAL POP-UP DETAIL
 let currentModalData = [];
@@ -381,6 +329,7 @@ let currentModalData = [];
 function renderModalRows(dataList) {
     const modalTableBody = document.getElementById('modal-table-body');
     const modalCountInfo = document.getElementById('modal-count-info');
+    if (!modalTableBody) return;
     modalTableBody.innerHTML = '';
 
     if (dataList.length === 0) {
@@ -412,19 +361,16 @@ function setupModalTrigger(selectorId, judulModal, dataList) {
     const modalTitle = document.getElementById('modal-title');
     const searchInput = document.getElementById('modal-search-input');
 
-    if (card) {
+    if (card && modal) {
         card.addEventListener('click', function(e) {
             e.preventDefault();
             currentModalData = dataList || [];
-            modalTitle.textContent = judulModal;
+            if (modalTitle) modalTitle.textContent = judulModal;
 
             if (searchInput) {
                 searchInput.value = '';
             }
 
-            // ==========================================
-            // RESET KEPALA TABEL KE FORMAT PEGAWAI STANDAR
-            // ==========================================
             const modalTableHead = document.querySelector('.modal-data-table thead');
             if (modalTableHead) {
                 modalTableHead.innerHTML = `
@@ -438,7 +384,6 @@ function setupModalTrigger(selectorId, judulModal, dataList) {
                 `;
             }
 
-            // Pastikan kotak pencarian internal modal kembali muncul
             const modalSearchWrapper = document.querySelector('.modal-search-wrapper');
             if (modalSearchWrapper) {
                 modalSearchWrapper.style.display = 'block';
@@ -447,7 +392,6 @@ function setupModalTrigger(selectorId, judulModal, dataList) {
             renderModalRows(currentModalData);
             modal.style.display = 'flex';
 
-            // Berikan fokus pada kolom pencarian saat modal terbuka
             setTimeout(() => {
                 if (searchInput) searchInput.focus();
             }, 100);
@@ -455,7 +399,6 @@ function setupModalTrigger(selectorId, judulModal, dataList) {
     }
 }
 
-// Handler Penutup Modal & Aksesibilitas Keyboard (Escape)
 function closeModal() {
     const modal = document.getElementById('modal-detail');
     if (modal) modal.style.display = 'none';
@@ -480,7 +423,6 @@ window.addEventListener('keydown', function(event) {
     }
 });
 
-// Saring data secara langsung di dalam Modal
 const modalSearchInput = document.getElementById('modal-search-input');
 if (modalSearchInput) {
     modalSearchInput.addEventListener('input', function(e) {
@@ -494,10 +436,7 @@ if (modalSearchInput) {
     });
 }
 
-// ==========================================================================
 // 5. FITUR PENCARIAN GLOBAL & REKAM JEJAK 1 TAHUN PENUH
-// ==========================================================================
-
 async function ambilDataSeluruhTahun(targetNipp) {
     let rekamJejakTahun = {
         nama: '',
@@ -560,7 +499,6 @@ async function ambilDataSeluruhTahun(targetNipp) {
     return rekamJejakTahun;
 }
 
-// Handler Input Pencarian Global di Navigasi
 const globalSearchInput = document.getElementById('global-search-input');
 const globalSearchResults = document.getElementById('global-search-results');
 
@@ -609,44 +547,47 @@ if (globalSearchInput && globalSearchResults) {
         const modalCountInfo = document.getElementById('modal-count-info');
         const modalSearchWrapper = document.querySelector('.modal-search-wrapper');
 
-        modalTitle.textContent = `Rekam Jejak Kehadiran 1 Tahun`;
+        if (modalTitle) modalTitle.textContent = `Rekam Jejak Kehadiran 1 Tahun`;
         if (modalSearchWrapper) modalSearchWrapper.style.display = 'none'; 
-        modalTableBody.innerHTML = `<tr><td colspan="6" class="cell-center" style="padding: 24px; color: var(--text-muted);">Memuat rekam jejak 1 tahun penuh...</td></tr>`;
-        modal.style.display = 'flex';
+        if (modalTableBody) modalTableBody.innerHTML = `<tr><td colspan="6" class="cell-center" style="padding: 24px; color: var(--text-muted);">Memuat rekam jejak 1 tahun penuh...</td></tr>`;
+        if (modal) modal.style.display = 'flex';
 
         const dataTahun = await ambilDataSeluruhTahun(nipp);
 
-        modalTitle.textContent = `Rekam Jejak: ${dataTahun.nama} (${dataTahun.nipp})`;
+        if (modalTitle) modalTitle.textContent = `Rekam Jejak: ${dataTahun.nama} (${dataTahun.nipp})`;
         
         if (dataTahun.bulanData.length === 0) {
-            modalTableBody.innerHTML = `<tr><td colspan="6" class="cell-center" style="padding: 24px; color: var(--text-muted);">Tidak ada data catatan ditemukan untuk NIPP ini.</td></tr>`;
+            if (modalTableBody) modalTableBody.innerHTML = `<tr><td colspan="6" class="cell-center" style="padding: 24px; color: var(--text-muted);">Tidak ada data catatan ditemukan untuk NIPP ini.</td></tr>`;
             if (modalCountInfo) modalCountInfo.textContent = '0 bulan tercatat';
             return;
         }
 
-        // Render struktur header modal dengan kolom TMS dan Mangkir terpisah (tanpa kolom Hadir)
         const modalTableHead = document.querySelector('.modal-data-table thead');
-        modalTableHead.innerHTML = `
-            <tr>
-                <th scope="col" class="cell-center">Bulan</th>
-                <th scope="col" class="cell-center">Cuti (CT)</th>
-                <th scope="col" class="cell-center">Sakit (CSK)</th>
-                <th scope="col" class="cell-center">Cuti Penting</th>
-                <th scope="col" class="cell-center col-tms">TMS</th>
-                <th scope="col" class="cell-center col-mangkir">Mangkir</th>
-            </tr>
-        `;
+        if (modalTableHead) {
+            modalTableHead.innerHTML = `
+                <tr>
+                    <th scope="col" class="cell-center">Bulan</th>
+                    <th scope="col" class="cell-center">Cuti (CT)</th>
+                    <th scope="col" class="cell-center">Sakit (CSK)</th>
+                    <th scope="col" class="cell-center">Cuti Penting</th>
+                    <th scope="col" class="cell-center col-tms">TMS</th>
+                    <th scope="col" class="cell-center col-mangkir">Mangkir</th>
+                </tr>
+            `;
+        }
 
-        modalTableBody.innerHTML = dataTahun.bulanData.map(b => `
-            <tr>
-                <td style="font-weight: 600; color: var(--text-primary);">${b.bulan}</td>
-                <td class="cell-center">${b.cuti}</td>
-                <td class="cell-center">${b.sakit}</td>
-                <td class="cell-center">${b.penting}</td>
-                <td class="cell-center ${b.tms > 0 ? 'val-nonzero-tms' : ''}">${b.tms}</td>
-                <td class="cell-center ${b.mangkir > 0 ? 'val-nonzero-mangkir' : ''}">${b.mangkir}</td>
-            </tr>
-        `).join('');
+        if (modalTableBody) {
+            modalTableBody.innerHTML = dataTahun.bulanData.map(b => `
+                <tr>
+                    <td style="font-weight: 600; color: var(--text-primary);">${b.bulan}</td>
+                    <td class="cell-center">${b.cuti}</td>
+                    <td class="cell-center">${b.sakit}</td>
+                    <td class="cell-center">${b.penting}</td>
+                    <td class="cell-center ${b.tms > 0 ? 'val-nonzero-tms' : ''}">${b.tms}</td>
+                    <td class="cell-center ${b.mangkir > 0 ? 'val-nonzero-mangkir' : ''}">${b.mangkir}</td>
+                </tr>
+            `).join('');
+        }
 
         if (modalCountInfo) {
             modalCountInfo.textContent = `Menampilkan akumulasi catatan ${dataTahun.bulanData.length} bulan`;
@@ -659,5 +600,312 @@ if (globalSearchInput && globalSearchResults) {
         }
     });
 }
-// Inisialisasi saat DOM siap
-window.addEventListener('DOMContentLoaded', muatDataDashboard);
+
+// 6. STATISTIK TREN CUTI TAHUNAN (DIAGRAM GARIS SVG)
+async function muatTrenCutiTahunan() {
+    const svgChart = document.getElementById('tren-line-chart');
+    if (!svgChart) return;
+    
+    const elTotalCutiTahun = document.getElementById('val-total-cuti-tahun');
+    const elRataCutiBulan = document.getElementById('val-rata-cuti-bulan');
+    const elPuncakCuti = document.getElementById('val-puncak-cuti');
+    
+    const namaBulanLengkap = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const namaBulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+    const fetchPromises = Object.keys(GID_BULAN).map(async (bulanIdxStr) => {
+        const bulanIdx = parseInt(bulanIdxStr);
+        const gid = GID_BULAN[bulanIdx];
+        let cutiBulanIni = 0;
+
+        if (gid) {
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
+                const res = await fetch(url);
+                if (res.ok) {
+                    const text = await res.text();
+                    const rows = text.split('\n');
+                    let processedNipps = new Set();
+
+                    rows.forEach(baris => {
+                        const kolom = baris.split(',').map(k => k.trim());
+                        if (kolom.length >= 4) {
+                            const potensiNipp = kolom[2];
+                            if (potensiNipp && !isNaN(potensiNipp) && potensiNipp.length >= 4 && !processedNipps.has(potensiNipp)) {
+                                processedNipps.add(potensiNipp);
+
+                                for (let i = 4; i <= 34; i++) {
+                                    if (kolom[i]) {
+                                        const val = kolom[i].toUpperCase();
+                                        if (val === 'CT') cutiBulanIni++;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (err) {
+                console.warn(`Gagal memuat tren cuti bulan index ${bulanIdx}:`, err);
+            }
+        }
+
+        return {
+            index: bulanIdx,
+            bulan: namaBulanPendek[bulanIdx],
+            namaLengkap: namaBulanLengkap[bulanIdx],
+            cuti: cutiBulanIni
+        };
+    });
+
+    try {
+        const dataPerBulanUnsorted = await Promise.all(fetchPromises);
+        const dataPerBulan = dataPerBulanUnsorted.sort((a, b) => a.index - b.index);
+
+        const totalKeseluruhanCuti = dataPerBulan.reduce((sum, item) => sum + item.cuti, 0);
+        const maxCuti = Math.max(...dataPerBulan.map(d => d.cuti), 5);
+        const rataRata = (totalKeseluruhanCuti / 12).toFixed(1);
+
+        let bulanPuncak = dataPerBulan[0];
+        dataPerBulan.forEach(d => {
+            if (d.cuti > bulanPuncak.cuti) bulanPuncak = d;
+        });
+
+        if (elTotalCutiTahun) elTotalCutiTahun.textContent = totalKeseluruhanCuti;
+        if (elRataCutiBulan) elRataCutiBulan.textContent = rataRata;
+        if (elPuncakCuti) {
+            elPuncakCuti.textContent = totalKeseluruhanCuti > 0 ? `${bulanPuncak.namaLengkap} (${bulanPuncak.cuti} Hari)` : 'Belum ada data';
+        }
+
+        const svgWidth = 840;
+        const svgHeight = 260;
+        const paddingTop = 35;
+        const paddingBottom = 45;
+        const paddingX = 50;
+        const usableWidth = svgWidth - (paddingX * 2);
+        const usableHeight = svgHeight - paddingTop - paddingBottom;
+
+        const points = dataPerBulan.map((item, idx) => {
+            const x = paddingX + (idx * (usableWidth / 11));
+            const y = paddingTop + usableHeight - ((item.cuti / maxCuti) * usableHeight);
+            return { x, y, ...item };
+        });
+
+        const pointsString = points.map(p => `${p.x},${p.y}`).join(' ');
+        const firstX = points[0].x;
+        const lastX = points[points.length - 1].x;
+        const bottomY = paddingTop + usableHeight;
+        const areaString = `${firstX},${bottomY} ${pointsString} ${lastX},${bottomY}`;
+
+        let svgContent = `
+            <line x1="${paddingX}" y1="${paddingTop}" x2="${svgWidth - paddingX}" y2="${paddingTop}" class="chart-grid-line" />
+            <line x1="${paddingX}" y1="${paddingTop + (usableHeight / 2)}" x2="${svgWidth - paddingX}" y2="${paddingTop + (usableHeight / 2)}" class="chart-grid-line" />
+            <line x1="${paddingX}" y1="${bottomY}" x2="${svgWidth - paddingX}" y2="${bottomY}" class="chart-grid-line" />
+
+            <polygon points="${areaString}" class="chart-area" />
+            <polyline points="${pointsString}" class="chart-line" />
+        `;
+
+        points.forEach(p => {
+            svgContent += `
+                <circle cx="${p.x}" cy="${p.y}" r="4.5" class="chart-dot">
+                    <title>${p.namaLengkap}: ${p.cuti} hari cuti</title>
+                </circle>
+                <text x="${p.x}" y="${p.y - 12}" class="chart-text-value">${p.cuti}</text>
+                <text x="${p.x}" y="${svgHeight - 15}" class="chart-text-month">${p.bulan}</text>
+            `;
+        });
+
+        svgChart.innerHTML = svgContent;
+
+    } catch (error) {
+        console.error("Gagal merender diagram garis:", error);
+    }
+}
+
+// 8. MODUL MONITORING SISA CUTI BERBASIS DATABASE PEGAWAI & NIPP
+const SPREADSHEET_PEGAWAI_ID = '1g4GYx89S9pRe4214Z7DKAPoFP84fP4JyUjCzp-THIBM'; 
+const GID_DATABASE_PEGAWAI = '0';
+
+function hitungMasaKerja(tanggalMulaiStr) {
+    if (!tanggalMulaiStr) return 0;
+    const parts = tanggalMulaiStr.trim().split('/');
+    if (parts.length !== 3) return 0;
+    
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+    
+    const tglMulai = new Date(year, month, day);
+    const sekarang = new Date();
+    
+    let selisihTahun = sekarang.getFullYear() - tglMulai.getFullYear();
+    const m = sekarang.getMonth() - tglMulai.getMonth();
+    if (m < 0 || (m === 0 && sekarang.getDate() < tglMulai.getDate())) {
+        selisihTahun--;
+    }
+    return Math.max(0, selisihTahun);
+}
+
+function hitungHakCutiTahunan(masaKerja) {
+    if (masaKerja <= 10) return 12;
+    if (masaKerja <= 15) return 13;
+    if (masaKerja <= 20) return 14;
+    if (masaKerja <= 25) return 15;
+    return 16;
+}
+
+async function muatDataSisaCuti() {
+    const tbody = document.getElementById('tabel-sisa-cuti-body');
+    const labelCount = document.getElementById('label-jumlah-cuti');
+    if (!tbody) return;
+
+    const namaBulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    let petaPegawai = {};
+
+    try {
+        const urlDb = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_PEGAWAI_ID}/export?format=csv&gid=${GID_DATABASE_PEGAWAI}`;
+        const resDb = await fetch(urlDb);
+        if (!resDb.ok) throw new Error("Gagal mengambil file database pegawai.");
+        
+        const textDb = await resDb.text();
+        const rowsDb = textDb.split('\n');
+
+        rowsDb.forEach(baris => {
+            const kolom = baris.split(',').map(k => k.trim());
+            if (kolom.length >= 4) {
+                const namaDb = kolom[1] || '';
+                const nippDb = kolom[2];
+                const mulaiBekerja = kolom[3] || '';
+
+                if (nippDb && !isNaN(nippDb) && nippDb.length >= 4) {
+                    const masaKerja = hitungMasaKerja(mulaiBekerja);
+                    const hakCuti = hitungHakCutiTahunan(masaKerja);
+
+                    petaPegawai[nippDb] = {
+                        nama: namaDb,
+                        nipp: nippDb,
+                        mulaiBekerja,
+                        masaKerja,
+                        hakCuti,
+                        riwayatCuti: []
+                    };
+                }
+            }
+        });
+
+        const fetchPromises = Object.keys(GID_BULAN).map(async (bulanIdxStr) => {
+            const bulanIdx = parseInt(bulanIdxStr);
+            const gid = GID_BULAN[bulanIdx];
+            if (!gid) return;
+
+            try {
+                const urlCuti = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
+                const resCuti = await fetch(urlCuti);
+                if (!resCuti.ok) return;
+                const textCuti = await resCuti.text();
+                const rowsCuti = textCuti.split('\n');
+
+                rowsCuti.forEach(barisCuti => {
+                    const kolomCuti = barisCuti.split(',').map(k => k.trim());
+                    if (kolomCuti.length >= 4) {
+                        const nippCuti = kolomCuti[2];
+                        const namaCuti = kolomCuti[1] || '';
+
+                        if (nippCuti && petaPegawai[nippCuti]) {
+                            if (namaCuti && petaPegawai[nippCuti].nama !== namaCuti) {
+                                petaPegawai[nippCuti].nama = namaCuti; 
+                            }
+
+                            for (let i = 4; i <= 34; i++) {
+                                if (kolomCuti[i]) {
+                                    const val = kolomCuti[i].toUpperCase();
+                                    if (val === 'CT') {
+                                        petaPegawai[nippCuti].riwayatCuti.push(`${i - 3} ${namaBulanPendek[bulanIdx]}`);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.warn(`Gagal memuat rekap cuti bulan index ${bulanIdx}:`, err);
+            }
+        });
+
+        await Promise.all(fetchPromises);
+
+        let dataFinal = Object.values(petaPegawai).map(pegawai => {
+            const cutiTerpakai = pegawai.riwayatCuti.length;
+            const sisaCuti = Math.max(0, pegawai.hakCuti - cutiTerpakai);
+            return {
+                ...pegawai,
+                cutiTerpakai,
+                sisaCuti,
+                riwayatStr: pegawai.riwayatCuti.length > 0 ? pegawai.riwayatCuti.join(', ') : '-'
+            };
+        });
+
+        window.cacheSisaCuti = dataFinal;
+        renderTabelSisaCuti(dataFinal);
+        if (labelCount) labelCount.textContent = `Menampilkan ${dataFinal.length} personel`;
+
+    } catch (error) {
+        console.error("Gagal memproses data sisa cuti:", error);
+        tbody.innerHTML = `<tr><td colspan="9" class="cell-center" style="padding: 30px; color: var(--status-mangkir);">Gagal memuat database pegawai. Periksa kembali ID Spreadsheet dan GID database Anda.</td></tr>`;
+    }
+}
+
+function renderTabelSisaCuti(dataList) {
+    const tbody = document.getElementById('tabel-sisa-cuti-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (dataList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="cell-center" style="padding: 30px; color: var(--text-muted);">Tidak ada data pegawai ditemukan.</td></tr>`;
+        return;
+    }
+
+    dataList.forEach((p, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="cell-center">${idx + 1}</td>
+            <td style="font-weight: 600; color: var(--text-primary);">${p.nama}</td>
+            <td class="cell-center" style="font-variant-numeric: tabular-nums;">${p.nipp}</td>
+            <td class="cell-center" style="font-weight: 700;">${p.hakCuti} Hari</td>
+            <td class="cell-center" style="color: var(--status-cuti); font-weight: 700;">${p.cutiTerpakai} Hari</td>
+            <td class="cell-center" style="font-weight: 800; color: ${p.sisaCuti > 0 ? 'var(--kai-orange)' : 'var(--status-mangkir)'};">${p.sisaCuti} Hari</td>
+            <td style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px; white-space: normal;">${p.riwayatStr}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+const inputCariSisaCuti = document.getElementById('input-cari-sisa-cuti');
+if (inputCariSisaCuti) {
+    inputCariSisaCuti.addEventListener('input', function(e) {
+        const keyword = e.target.value.toLowerCase().trim();
+        const filtered = (window.cacheSisaCuti || []).filter(p =>
+            p.nama.toLowerCase().includes(keyword) || p.nipp.toLowerCase().includes(keyword)
+        );
+        renderTabelSisaCuti(filtered);
+        const labelCount = document.getElementById('label-jumlah-cuti');
+        if (labelCount) labelCount.textContent = `Menampilkan ${filtered.length} dari ${(window.cacheSisaCuti || []).length} personel`;
+    });
+}
+
+// 9. INISIALISASI OTOMATIS SAAT HALAMAN DIMUAT
+window.addEventListener('DOMContentLoaded', () => {
+    // Jalankan modul dashboard utama & diagram jika berada di index.html
+    if (document.getElementById('val-asp') || document.getElementById('tren-line-chart')) {
+        muatDataDashboard();
+        muatTrenCutiTahunan();
+    }
+
+    // Jalankan modul sisa cuti jika berada di sisa-cuti.html
+    if (document.getElementById('tabel-sisa-cuti')) {
+        muatDataSisaCuti();
+    }
+});
