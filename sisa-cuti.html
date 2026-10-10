@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Sisa Cuti Tahunan - UPT Crew KA Kisaran</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- TOP UTILITY BAR -->
+    <header class="top-header" role="banner">
+        <div class="top-header-inner">
+            <div class="brand-affiliation">
+                <a href="index.html" class="btn btn-secondary btn-sm" style="color: white; border-color: rgba(255,255,255,0.3); background: transparent;">
+                    &larr; Kembali ke Dashboard Utama
+                </a>
+            </div>
+            <div class="time-container">
+                <span class="live-status-dot"></span>
+                <span id="hari-ini"></span>
+                <span id="tanggal-ini"></span>
+                <span class="time-separator">|</span>
+                <span id="jam-ini" class="time-clock"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="dashboard-content" id="main-content">
+        <section class="dashboard-section section-bulanan-card">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Monitoring Sisa Cuti Tahunan Pegawai</h2>
+                </div>
+            </div>
+
+            <!-- Toolbar Pencarian -->
+            <div class="table-search-bar" style="margin-bottom: 20px;">
+                <div class="search-input-wrapper">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" x2="16.65" y1="21" y2="16.65"/>
+                    </svg>
+                    <input type="text" id="input-cari-sisa-cuti" placeholder="Cari nama atau NIPP pegawai...">
+                </div>
+                <div class="table-count-label" id="label-jumlah-cuti">Memuat data database pegawai...</div>
+            </div>
+
+            <!-- Tabel Sisa Cuti -->
+            <div class="table-responsive-wrapper">
+                <table class="data-table" id="tabel-sisa-cuti">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="cell-center">No</th>
+                            <th scope="col">Nama Pegawai</th>
+                            <th scope="col" class="cell-center">NIPP</th>
+                            <th scope="col" class="cell-center">Hak Cuti</th>
+                            <th scope="col" class="cell-center">Cuti Terpakai</th>
+                            <th scope="col" class="cell-center" style="color: var(--kai-orange);">Sisa Cuti</th>
+                            <th scope="col">Detail Tanggal Pengambilan Cuti</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-sisa-cuti-body">
+                        <tr><td colspan="7" class="cell-center" style="padding: 30px; color: var(--text-muted);">Menghubungkan ke database pegawai dan rekapitulasi cuti...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

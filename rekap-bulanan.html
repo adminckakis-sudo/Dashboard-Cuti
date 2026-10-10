@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekapitulasi Presensi Bulanan - UPT Crew KA Kisaran</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ================= TOP UTILITY BAR ================= -->
+    <header class="top-header" role="banner">
+        <div class="top-header-inner">
+            <div class="brand-affiliation">
+                <a href="index.html" class="btn btn-secondary btn-sm" style="color: white; border-color: rgba(255,255,255,0.3); background: transparent;">
+                    &larr;Dashboard Utama
+                </a>
+            </div>
+            <div class="time-container" aria-label="Waktu sistem saat ini">
+                <span class="live-status-dot" aria-hidden="true"></span>
+                <span id="hari-ini"></span>
+                <span id="tanggal-ini"></span>
+                <span class="time-separator" aria-hidden="true">|</span>
+                <span id="jam-ini" class="time-clock"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= KONTEN UTAMA REKAPITULASI BULANAN ================= -->
+    <main class="dashboard-content" id="main-content">
+        <section class="dashboard-section section-bulanan-card" aria-labelledby="heading-bulanan">
+            <div class="section-header">
+                <div>
+                    <h2 id="heading-bulanan" class="section-title">Rekapitulasi Presensi Bulanan</h2>
+                    <p class="section-desc">Analisis akumulasi kehadiran dan unduh laporan per bulan</p>
+                </div>
+            </div>
+
+            <!-- Kontrol Pilih Bulan & Aksi -->
+            <div class="bulan-toolbar">
+                <div class="toolbar-left">
+                    <label for="select-pilih-bulan" class="sr-only">Pilih Bulan</label>
+                    <div class="select-wrapper">
+                        <select id="select-pilih-bulan" aria-label="Pilih Bulan Rekapitulasi">
+                            <option value="0">Januari</option>
+                            <option value="1">Februari</option>
+                            <option value="2">Maret</option>
+                            <option value="3">April</option>
+                            <option value="4">Mei</option>
+                            <option value="5">Juni</option>
+                            <option value="6">Juli</option>
+                            <option value="7">Agustus</option>
+                            <option value="8">September</option>
+                            <option value="9">Oktober</option>
+                            <option value="10">November</option>
+                            <option value="11">Desember</option>
+                        </select>
+                    </div>
+                    <button id="btn-tampilkan-bulan" class="btn btn-primary" type="button">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" x2="16.65" y1="21" y2="16.65"/>
+                        </svg>
+                        <span>Tampilkan Data</span>
+                    </button>
+                </div>
+
+                <div class="toolbar-right">
+                    <button id="btn-ekspor-excel" class="btn btn-secondary" type="button">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" x2="12" y1="15" y2="3"/>
+                        </svg>
+                        <span>Unduh CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Area Hasil Rekapitulasi Bulanan -->
+            <div id="hasil-rekap-bulanan" class="hasil-rekap-container">
+                
+                <!-- 1. Ringkasan Kartu Statistik Bulanan -->
+                <div class="bulan-summary-grid">
+                    <div class="summary-card">
+                        <span class="summary-label">Total Personel</span>
+                        <div class="summary-val-row">
+                            <span class="summary-val" id="sum-total-pegawai">0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card card-hadir">
+                        <span class="summary-label">Tingkat Kehadiran</span>
+                        <div class="summary-val-row">
+                            <span class="summary-val" id="sum-rata-hadir">0%</span>
+                        </div>
+                    </div>
+                    <div class="summary-card card-cuti">
+                        <span class="summary-label">Akumulasi Cuti (CT)</span>
+                        <div class="summary-val-row">
+                            <span class="summary-val" id="sum-total-cuti">0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card card-sakit">
+                        <span class="summary-label">Akumulasi Sakit (CSK)</span>
+                        <div class="summary-val-row">
+                            <span class="summary-val" id="sum-total-sakit">0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card card-tms">
+                        <span class="summary-label">Akumulasi TMS</span>
+                        <div class="summary-val-row">
+                            <span class="summary-val" id="sum-total-tms">0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card card-mangkir">
+                        <span class="summary-label">Akumulasi Mangkir</span>
+                        <div class="summary-val-row">
+                            <span class="summary-val" id="sum-total-mangkir">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Filter Pencarian Tabel -->
+                <div class="table-search-bar">
+                    <div class="search-input-wrapper">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" x2="16.65" y1="21" y2="16.65"/>
+                        </svg>
+                        <input type="text" id="input-cari-bulan" placeholder="Cari nama atau NIPP pegawai..." aria-label="Cari nama atau NIPP dalam tabel bulanan">
+                    </div>
+                    <div class="table-count-label" id="label-jumlah-rekap">Menampilkan data rekapitulasi</div>
+                </div>
+
+                <!-- 3. Tabel Rekapitulasi Per Personel -->
+                <div class="table-responsive-wrapper">
+                    <table class="data-table" id="tabel-rekap-bulanan">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="cell-center">No</th>
+                                <th scope="col">Nama Pegawai</th>
+                                <th scope="col" class="cell-center">NIPP</th>
+                                <th scope="col">Jabatan</th>
+                                <th scope="col" class="cell-center col-hadir">Hadir</th>
+                                <th scope="col" class="cell-center">Cuti (CT)</th>
+                                <th scope="col" class="cell-center">Sakit (CSK)</th>
+                                <th scope="col" class="cell-center">Cuti Penting</th>
+                                <th scope="col" class="cell-center col-tms">TMS</th>
+                                <th scope="col" class="cell-center col-mangkir">Mangkir</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-rekap-bulanan-body">
+                            <!-- Injeksi data melalui JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Hubungkan berkas JavaScript -->
+    <script src="js/main.js"></script>
+</body>
+</html>
